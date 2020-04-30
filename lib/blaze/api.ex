@@ -140,7 +140,7 @@ defmodule Blaze.API do
   def parse_documents({:ok, %Empty{}}), do: {:ok, []}
   def parse_documents({:ok, %ListDocumentsResponse{documents: docs, nextPageToken: npt}}) do
     {:ok, %{
-      documents: docs |> Enum.map(&Blaze.Document.decode/1) |> Enum.into(%{}),
+      documents: docs |> Enum.map(&Blaze.Document.decode/1),
       nextPageToken: npt,
     }}
   end
