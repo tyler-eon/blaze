@@ -95,6 +95,7 @@ defmodule Blaze.Document do
   """
   @spec decode_value({term, term} | Model.Value.t) :: {term, term} | term
   def decode_value({key, val}), do: {key, decode_value(val)}
+  def decode_value(%Model.Value{arrayValue: %{values: nil}}), do: []
   def decode_value(%Model.Value{arrayValue: %{values: list}}) do
     Enum.map(list, &decode_value/1)
   end
