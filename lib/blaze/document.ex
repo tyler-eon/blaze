@@ -116,8 +116,7 @@ defmodule Blaze.Document do
     Enum.map(list, &decode_value/1)
   end
 
-  def decode_value(%Model.Value{mapValue: nil}), do: %{}
-  def decode_value(%Model.Value{mapValue: %{fields: nil}}), do: %{}
+  def decode_value(%Model.Value{mapValue: %{fields: nil}}), do: nil
 
   def decode_value(%Model.Value{mapValue: %{fields: map}}) do
     map |> Enum.map(&decode_value/1) |> Enum.into(%{})
