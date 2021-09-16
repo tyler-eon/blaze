@@ -27,6 +27,7 @@ defmodule Blaze.API do
 
   alias GoogleApi.Firestore.V1.Api.Projects
   alias GoogleApi.Firestore.V1.Connection
+
   alias GoogleApi.Firestore.V1.Model.{
     Empty,
     ListDocumentsResponse,
@@ -138,24 +139,33 @@ defmodule Blaze.API do
   """
   @spec parse_documents(term) :: term
   def parse_documents({:ok, %Empty{}}), do: {:ok, []}
+
+  def parse_documents({:ok, %ListDocumentsResponse{documents: nil}}),
+    do: {:ok, []}
+
   def parse_documents({:ok, %ListDocumentsResponse{documents: docs, nextPageToken: npt}}) do
-    {:ok, %{
-      documents: docs |> Enum.map(&Blaze.Document.decode/1),
-      nextPageToken: npt,
-    }}
+    {:ok,
+     %{
+       documents: docs |> Enum.map(&Blaze.Document.decode/1),
+       nextPageToken: npt
+     }}
   end
+
   def parse_documents({:ok, docs}) when is_list(docs) do
     # Yet another ridiculous thing about the API - instead of returning a single
     # top-level query response object with a list of results, the `RunQuery`
     # API returns a list of `RunQueryResponse` models that each contain a single
     # document. We address that here in our custom `Enum.map` block, extracting
     # the document before decoding.
-    documents = Enum.map(docs, fn
-      %RunQueryResponse{document: doc} -> Blaze.Document.decode(doc)
-      doc -> Blaze.Document.decode(doc)
-    end)
+    documents =
+      Enum.map(docs, fn
+        %RunQueryResponse{document: doc} -> Blaze.Document.decode(doc)
+        doc -> Blaze.Document.decode(doc)
+      end)
+
     {:ok, documents}
   end
+
   def parse_documents({:ok, doc}), do: {:ok, Blaze.Document.decode(doc)}
   def parse_documents(response), do: response
 end
