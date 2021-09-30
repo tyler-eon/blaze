@@ -241,9 +241,9 @@ defmodule Blaze.Query do
   @spec order(t, [binary | {binary, atom}] | Map.t) :: t
   def order(%StructuredQuery{}=query \\ %StructuredQuery{}, orders) do
     ordering = create_ordering(orders)
-    case query.order_by do
-      nil    -> %{query | order_by: ordering}
-      [prev] -> %{query | order_by: Enum.concat(ordering, prev)}
+    case query.orderBy do
+      nil    -> %{query | orderBy: ordering}
+      [prev] -> %{query | orderBy: Enum.concat(ordering, prev)}
     end
   end
 
